@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "A Jugar";
+}
+<h1>Adiviná la palabra!</h1>
+<p> Palabra: @ViewBag.PalabraOculta</p>
+<p>Letras usadas:</p>
+@for (int i = 0; i < ViewBag.LetrasUsadas.Count; i++)
+{
+   <h3> @ViewBag.LetrasUsadas[i]</h3>
+}
+<p>Intentos: @ViewBag.LetrasUsadas.Count</p>
+<form action="@Url.Action("arriesgarLetra", "Home")" method="post">
+    Nueva letra: <input type="text" name="letra" maxlength="1" />
+    <input type="submit" value="Arriesgar Letra" />
+</form>
+<form action="@Url.Action("ArriesgarPalabra", "Home")" method="post">
+    Arriesgar palabra: <input type="text" name="palabraIngresada" maxlength="20" />
+    <input type="submit" value="Arriesgar Palabra" />
+</form>
