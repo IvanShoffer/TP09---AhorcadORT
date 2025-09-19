@@ -8,7 +8,14 @@ public class Juego
     public List<Usuario> Jugadores;
     [JsonProperty]
     public  Usuario jugadorActual;
-
+[JsonProperty]
+    public string PalabraActual;
+public Juego()
+{
+    ListaPalabras = new List<Palabra>();
+    Jugadores     = new List<Usuario>();
+    PalabraActual = "";
+}
      private void LlenarListaPalabras()
     {
             
@@ -64,43 +71,46 @@ public class Juego
 }
 public void InicializarJuego(string usuario, int dificultad)
 {
-        ListaPalabras = new List<Palabra>();
-    Jugadores = new List<Usuario>();
+    if (ListaPalabras == null || ListaPalabras.Count == 0)
+        LlenarListaPalabras();
 
-  
-    LlenarListaPalabras();
+    if (Jugadores == null)
+        Jugadores = new List<Usuario>();
 
-    
-    
-     jugadorActual = new Usuario();
-    jugadorActual.nombre = usuario;
-    jugadorActual.cantidadIntentos = 0;
+    jugadorActual = new Usuario { nombre = usuario, cantidadIntentos = 0 };
+    PalabraActual = CargarPalabra(dificultad);
 }
-private String CargarPalabra(int Dificultad)
+private string CargarPalabra(int dificultad)
 {
+ 
+
+    List<Palabra> candidatas = new List<Palabra>();
+    foreach (Palabra palabra in ListaPalabras)
+    {
+        if (palabra.Dificultad == dificultad)
+        {
+            candidatas.Add(palabra);
+        }
+    }
+
     
-    string palabraReturn="";
-  foreach(Palabra palabra in ListaPalabras)
-  {
-    if(palabra.Dificultad== Dificultad)
-   {
-        palabraReturn=palabra.Texto;
-        
-   } 
-  }
-   return palabraReturn;
+
+    Random rnd = new Random();
+    Palabra elegida = candidatas[rnd.Next(0, candidatas.Count)];
+    return elegida.Texto;
 }
-private void FinJuego(int intentos)
+public void FinJuego(int intentos)
 {
     
     jugadorActual.cantidadIntentos = intentos;
     Jugadores.Add(jugadorActual);
 }
- private List<Usuario> DevolverListaUsuarios()
- {
+public List<Usuario> DevolverListaUsuarios()
+{
+    Jugadores = new List<Usuario>();          
     Jugadores.Sort((a, b) => a.cantidadIntentos.CompareTo(b.cantidadIntentos));
-    return Jugadores;
- }
+    return Jugadores;                             
+}
 
 
            

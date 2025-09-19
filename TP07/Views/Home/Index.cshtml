@@ -1,6 +1,32 @@
 @{
     ViewData["Title"] = "AHORCADO POR GIF";
+     List<Usuario> jugadores = ViewBag.Jugadores as List<Usuario>;
 }
-<div>
-    <h2>Presione para jugar <a href='@Url.Action("jugar","Home")'>aqui</a></h2>
-</div>
+
+<form method="post" action='@Url.Action("Comenzar", "Home")'>
+    <p>Nombre de usuario:</p>
+    <input type="text" name="username" />
+
+    <p>Dificultad:</p>
+    <select name="dificultad">
+        <option value="1">1 - Fácil</option>
+        <option value="2">2 - Media</option>
+        <option value="3">3 - Difícil</option>
+        <option value="4">4 - Experto</option>
+    </select>
+    <h2> Lista de jugadores que han participado</h2>
+    @if (jugadores.Count > 0)
+    {
+  @foreach(Usuario usuario in ViewBag.jugadores)
+    {
+        <h3> Nombre: @usuario.nombre </h3>
+    }
+    }
+    else{
+        <p>Todavía no hay jugadores.</p>
+    }
+  
+
+
+    <input type="submit" value="Jugar" />
+</form>

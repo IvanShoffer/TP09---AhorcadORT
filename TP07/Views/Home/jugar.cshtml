@@ -1,19 +1,131 @@
 @{
-    ViewData["Title"] = "A Jugar";
+    ViewData["Title"] = "Juego";
+     var usuario = ViewBag.Username;
+    var palabra = ViewBag.Palabra;
 }
-<h1>Adiviná la palabra!</h1>
-<p> Palabra: @ViewBag.PalabraOculta</p>
+
+<h1>Juego</h1>
+<p>Jugador: <b>@usuario</b></p>
+
+<div id="palabraMostrada"></div>
+
+<input type="hidden" id="numeroIntentos" value="0">
+
 <p>Letras usadas:</p>
-@for (int i = 0; i < ViewBag.LetrasUsadas.Count; i++)
-{
-   <h3> @ViewBag.LetrasUsadas[i]</h3>
-}
-<p>Intentos: @ViewBag.LetrasUsadas.Count</p>
-<form action="@Url.Action("arriesgarLetra", "Home")" method="post">
-    Nueva letra: <input type="text" name="letra" maxlength="1" />
-    <input type="submit" value="Arriesgar Letra" />
+<div id="letrasProbadas"></div>
+
+<input type="text" id="cuadroEntrada">
+
+<button onclick="probarLetra()">Arriesgar letra</button>
+<button onclick="probarPalabra()">Arriesgar palabra</button>
+
+<form id="formularioFin" method="post" action='@Url.Action("FinJuego","Home")' style="display:none;">
+    <input type="hidden" name="intentos" id="cantidadIntentos">
+    <button id="botonFin" type="submit">Fin (guardar partida)</button>
 </form>
-<form action="@Url.Action("ArriesgarPalabra", "Home")" method="post">
-    Arriesgar palabra: <input type="text" name="palabraIngresada" maxlength="20" />
-    <input type="submit" value="Arriesgar Palabra" />
-</form>
+
+<a id="botonVolver" href='@Url.Action("Index","Home")' style="display:none;">Volver al inicio</a>
+
+<script>
+    var PALABRA = "@palabra";
+    var letrasMostradas = [];
+    var letrasUsadas = [];
+
+    function iniciar() {
+        for (var i = 0; i < PALABRA.length; i++) {
+            var ch = PALABRA.charAt(i);
+            if (esLetra(ch)) {
+                letrasMostradas.push("_");
+            } else {
+                letrasMostradas.push(ch);
+            }
+        }
+        actualizarPantalla();
+    }
+
+    function esLetra(ch) {
+        var letrasValidas = "abcdefghijklmnñopqrstuvwxyzáéíóúü";
+        return letrasValidas.indexOf(ch.toLowerCase()) !== -1;
+    }
+
+    function actualizarPantalla() {
+        document.getElementById("palabraMostrada").innerHTML = letrasMostradas.join(" ");
+        document.getElementById("letrasProbadas").innerHTML = letrasUsadas.join(" ");
+        document.getElementById("cantidadIntentos").value = document.getElementById("numeroIntentos").value;
+    }
+
+    function sumarIntento() {
+        var h = document.getElementById("numeroIntentos");
+        var n = parseInt(h.value);
+        if (isNaN(n)) n = 0;
+        h.value = n + 1;
+    }
+
+    function probarLetra() {
+        var entrada = document.getElementById("cuadroEntrada");
+        var letra = (entrada.value || "").toLowerCase();
+        entrada.value = "";
+        if (letra.length === 0) return;
+
+        for (var i = 0; i < letrasUsadas.length; i++) {
+            if (letrasUsadas[i] === letra) {
+                alert("Ya probaste esa letra.");
+                return;
+            }
+        }
+        letrasUsadas.push(letra);
+
+        var acierto = false;
+        for (var j = 0; j < PALABRA.length; j++) {
+            if (PALABRA.charAt(j).toLowerCase() === letra) {
+                letrasMostradas[j] = PALABRA.charAt(j);
+                acierto = true;
+            }
+        }
+        if (!acierto) {
+            sumarIntento();
+        }
+
+        actualizarPantalla();
+        verificarVictoria();
+    }
+
+    function probarPalabra() {
+        var entrada = document.getElementById("cuadroEntrada");
+        var propuesta = (entrada.value || "").toLowerCase();
+        entrada.value = "";
+        if (propuesta.length === 0) return;
+
+        if (propuesta === PALABRA.toLowerCase()) {
+            letrasMostradas = PALABRA.split("");
+            actualizarPantalla();
+            ganar();
+        } else {
+            alert("¡Incorrecto! Perdiste. Volvé al inicio para jugar de nuevo.");
+            document.getElementById("botonVolver").style.display = "inline";
+            document.getElementById("cuadroEntrada").disabled = true;
+        }
+    }
+
+    function verificarVictoria() {
+        var completo = true;
+        for (var i = 0; i < letrasMostradas.length; i++) {
+            if (letrasMostradas[i] === "_") {
+                completo = false;
+            }
+        }
+        if (completo) {
+            ganar();
+        }
+    }
+
+    function ganar() {
+        var intentos = document.getElementById("numeroIntentos").value;
+        alert("¡Felicitaciones! Ganaste en " + intentos + " intentos.");
+        document.getElementById("formularioFin").style.display = "block";
+        document.getElementById("cuadroEntrada").disabled = true;
+        document.getElementById("cantidadIntentos").value = intentos;
+    }
+
+    iniciar();
+</script>

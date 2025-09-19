@@ -15,75 +15,35 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-         
-        return View();
+         Juego juego = new Juego();   
+        HttpContext.Session.SetString("juego",objeto.ObjectToString(juego));
+           ViewBag.jugadores = juego.DevolverListaUsuarios();
+         return View("Index");
+     
     }
-    public IActionResult Jugar()
+    [HttpPost]
+    public IActionResult Comenzar(string username, int dificultad)
         {
-           
+           Juego juego = objeto.StringToObject<Juego>(HttpContext.Session.GetString("juego"));
+            juego.InicializarJuego(username, dificultad);
+           ViewBag.Username = username;               
+           ViewBag.Palabra = juego.PalabraActual;
         
-        palabra.nuevaPartida();
-            
-    
-        ViewBag.PalabraOculta = palabra.encontrarPalabraOculta();
-        ViewBag.LetrasUsadas = palabra.intentos;
-        ViewBag.Gano = palabra.gano;
-        ViewBag.Finalizo = palabra.finalizo;
-        ViewBag.PalabraOriginal = palabra.palabraSecreta;
-        
-        
-    
+          HttpContext.Session.SetString("juego", objeto.ObjectToString(juego));
+
        
              return View("Jugar");
         }
-    public IActionResult arriesgarPalabra(string palabraIngresada)
-    {
-        ViewBag.PalabraOculta = palabra.encontrarPalabraOculta();
+   [HttpPost] 
+   public IActionResult FinJuego(int intentos)
+{
+     Juego juego = objeto.StringToObject<Juego>(HttpContext.Session.GetString("juego"));
+    juego.FinJuego(intentos);
+    juego.jugadorActual = null;
 
-      
+    HttpContext.Session.SetString("juego", objeto.ObjectToString(juego));
 
-        bool gano = palabra.ArriesgarPalabra(palabraIngresada);
-        if (gano == true )
-        {
-            ViewBag.Gano = palabra.gano;
-            ViewBag.LetrasUsadas = palabra.intentos;
-            ViewBag.cantIntentos = palabra.intentos.Count;
-            ViewBag.PalabraOriginal = palabra.palabraSecreta;
-
-        }
-        else
-        {
-            ViewBag.Gano = palabra.gano;
-            ViewBag.LetrasUsadas = palabra.intentos;
-            ViewBag.cantIntentos = palabra.intentos.Count;
-            ViewBag.PalabraOriginal = palabra.palabraSecreta;
-        }
-
-        return View("Final");
-
-    }
-       public IActionResult arriesgarLetra(char letra)
-    {
-       
-
-      
-              palabra.inicializarLetra(letra);
-            string oculto = palabra.encontrarPalabraOculta();
-            bool gano = palabra.VerificarGanador(oculto);
-
-            ViewBag.PalabraOculta= oculto;
-            ViewBag.LetrasUsadas= palabra.intentos;
-            ViewBag.CantIntentos= palabra.intentos.Count;
-            ViewBag.Gano= palabra.gano;
-            ViewBag.Finalizo= palabra.finalizo;
-            ViewBag.PalabraOriginal= palabra.palabraSecreta;
-
-     
-            if (palabra.finalizo == true)
-                return View("final");
-            else
-                return View("jugar");
-
-    }
-
+    return RedirectToAction("Index");
+}
+    
 }
