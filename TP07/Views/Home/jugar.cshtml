@@ -5,7 +5,7 @@
 }
 
 <h1>Juego</h1>
-<p>Jugador: <b>@usuario</b></p>
+<p>Jugador: @usuario</p>
 
 <div id="palabraMostrada"></div>
 
@@ -14,17 +14,17 @@
 <p>Letras usadas:</p>
 <div id="letrasProbadas"></div>
 
-<input type="text" id="cuadroEntrada">
+<input type="text" id="ingreso">
 
 <button onclick="probarLetra()">Arriesgar letra</button>
 <button onclick="probarPalabra()">Arriesgar palabra</button>
 
-<form id="formularioFin" method="post" action='@Url.Action("FinJuego","Home")' style="display:none;">
+<form id="formularioFin" method="post" action='@Url.Action("FinJuego","Home")'">
     <input type="hidden" name="intentos" id="cantidadIntentos">
     <button id="botonFin" type="submit">Fin (guardar partida)</button>
 </form>
 
-<a id="botonVolver" href='@Url.Action("Index","Home")' style="display:none;">Volver al inicio</a>
+<a id="botonVolver" href='@Url.Action("Index","Home")'">Volver al inicio</a>
 
 <script>
     var PALABRA = "@palabra";
@@ -33,19 +33,19 @@
 
     function iniciar() {
         for (var i = 0; i < PALABRA.length; i++) {
-            var ch = PALABRA.charAt(i);
-            if (esLetra(ch)) {
+            var letra = PALABRA.charAt(i);
+            if (esLetra(letra)) {
                 letrasMostradas.push("_");
             } else {
-                letrasMostradas.push(ch);
+                letrasMostradas.push(letra);
             }
         }
         actualizarPantalla();
     }
 
-    function esLetra(ch) {
+    function esLetra(letra) {
         var letrasValidas = "abcdefghijklmnñopqrstuvwxyzáéíóúü";
-        return letrasValidas.indexOf(ch.toLowerCase()) !== -1;
+        return letrasValidas.indexOf(letra.toLowerCase()) !== -1;
     }
 
     function actualizarPantalla() {
@@ -55,14 +55,14 @@
     }
 
     function sumarIntento() {
-        var h = document.getElementById("numeroIntentos");
-        var n = parseInt(h.value);
-        if (isNaN(n)) n = 0;
-        h.value = n + 1;
+        var numI = document.getElementById("numeroIntentos");
+        var num = parseInt(numI.value);
+        if (isNaN(num)) num = 0;
+        numI.value = num + 1;
     }
 
     function probarLetra() {
-        var entrada = document.getElementById("cuadroEntrada");
+        var entrada = document.getElementById("ingreso");
         var letra = (entrada.value || "").toLowerCase();
         entrada.value = "";
         if (letra.length === 0) return;
@@ -76,9 +76,9 @@
         letrasUsadas.push(letra);
 
         var acierto = false;
-        for (var j = 0; j < PALABRA.length; j++) {
-            if (PALABRA.charAt(j).toLowerCase() === letra) {
-                letrasMostradas[j] = PALABRA.charAt(j);
+        for (var ej = 0; ej < PALABRA.length; ej++) {
+            if (PALABRA.charAt(ej).toLowerCase() === letra) {
+                letrasMostradas[ej] = PALABRA.charAt(ej);
                 acierto = true;
             }
         }
@@ -91,7 +91,7 @@
     }
 
     function probarPalabra() {
-        var entrada = document.getElementById("cuadroEntrada");
+        var entrada = document.getElementById("ingreso");
         var propuesta = (entrada.value || "").toLowerCase();
         entrada.value = "";
         if (propuesta.length === 0) return;
@@ -102,8 +102,8 @@
             ganar();
         } else {
             alert("¡Incorrecto! Perdiste. Volvé al inicio para jugar de nuevo.");
-            document.getElementById("botonVolver").style.display = "inline";
-            document.getElementById("cuadroEntrada").disabled = true;
+            document.getElementById("botonVolver");
+            document.getElementById("ingreso");
         }
     }
 
@@ -122,8 +122,8 @@
     function ganar() {
         var intentos = document.getElementById("numeroIntentos").value;
         alert("¡Felicitaciones! Ganaste en " + intentos + " intentos.");
-        document.getElementById("formularioFin").style.display = "block";
-        document.getElementById("cuadroEntrada").disabled = true;
+        document.getElementById("formularioFin");
+        document.getElementById("ingreso");
         document.getElementById("cantidadIntentos").value = intentos;
     }
 
